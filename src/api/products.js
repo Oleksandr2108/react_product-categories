@@ -7,7 +7,7 @@ export default [
   {
     id: 2,
     name: 'Bread',
-    categoryId: 1,
+    categoryId: 1, 
   },
   {
     id: 3,
