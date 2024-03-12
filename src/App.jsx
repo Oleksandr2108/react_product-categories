@@ -24,11 +24,19 @@ const products = productsFromServer.map((product) => {
 
 export const App = () => {
   const [selectUser, setSelectUser] = useState('All');
+  const [search, setSearch] = useState('');
+
   let visibleProducts = [...products];
 
   if (selectUser !== 'All') {
     visibleProducts = visibleProducts.filter(
       (product) => product.users.name === selectUser
+    );
+  }
+
+  if (search) {
+    visibleProducts = visibleProducts.filter((product) =>
+      product.name.toLowerCase().includes(search.trim().toLowerCase())
     );
   }
 
@@ -70,7 +78,8 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
                 />
 
                 <span className="icon is-left">
@@ -79,11 +88,14 @@ export const App = () => {
 
                 <span className="icon is-right">
                   {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                  <button
-                    data-cy="ClearButton"
-                    type="button"
-                    className="delete"
-                  />
+                  {search && (
+                    <button
+                      data-cy="ClearButton"
+                      type="button"
+                      className="delete"
+                      onClick={() => setSearch('')}
+                    />
+                  )}
                 </span>
               </p>
             </div>
@@ -126,6 +138,10 @@ export const App = () => {
                 data-cy="ResetAllButton"
                 href="#/"
                 className="button is-link is-outlined is-fullwidth"
+                onClick={() => {
+                  setSelectUser('All');
+                  setSearch('');
+                }}
               >
                 Reset all filters
               </a>
