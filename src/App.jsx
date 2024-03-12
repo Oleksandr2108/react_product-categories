@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 import React, { useState } from 'react';
 import './App.scss';
-// import cn from 'classnames';
+import cn from 'classnames';
 
 import usersFromServer from './api/users';
 import categoriesFromServer from './api/categories';
@@ -25,6 +25,7 @@ const products = productsFromServer.map((product) => {
 export const App = () => {
   const [selectUser, setSelectUser] = useState('All');
   const [search, setSearch] = useState('');
+  const [selectCategory, setSelectCategory] = useState([]);
 
   let visibleProducts = [...products];
 
@@ -37,6 +38,12 @@ export const App = () => {
   if (search) {
     visibleProducts = visibleProducts.filter((product) =>
       product.name.toLowerCase().includes(search.trim().toLowerCase())
+    );
+  }
+
+  if (selectCategory.length) {
+    visibleProducts = visibleProducts.filter((product) =>
+      selectCategory.includes(product.categories.title)
     );
   }
 
@@ -105,32 +112,35 @@ export const App = () => {
                 href="#/"
                 data-cy="AllCategories"
                 className="button is-success mr-6 is-outlined"
+                onClick={() => setSelectCategory([])}
               >
                 All
               </a>
 
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 1
-              </a>
-
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 2
-              </a>
-
-              <a
-                data-cy="Category"
-                className="button mr-2 my-1 is-info"
-                href="#/"
-              >
-                Category 3
-              </a>
-              <a data-cy="Category" className="button mr-2 my-1" href="#/">
-                Category 4
-              </a>
+              {categoriesFromServer.map((category) => (
+                <a
+                  data-cy="Category"
+                  // className="button mr-2 my-1 is-info"
+                  className={cn('button mr-2 my-1', {
+                    'is-info': selectCategory.includes(category.title),
+                  })}
+                  href="#/"
+                  onClick={() => {
+                    if (!selectCategory.includes(category.title)) {
+                      setSelectCategory([...selectCategory, category.title]);
+                    } else {
+                      setSelectCategory(
+                        selectCategory.filter(
+                          (product) => product !== category.title
+                        )
+                      );
+                    }
+                  }}
+                  // className={selectCategory === category.title ? 'is-info' : ''}
+                >
+                  {category.title}
+                </a>
+              ))}
             </div>
 
             <div className="panel-block">
@@ -141,6 +151,7 @@ export const App = () => {
                 onClick={() => {
                   setSelectUser('All');
                   setSearch('');
+                  setSelectCategory([]);
                 }}
               >
                 Reset all filters
